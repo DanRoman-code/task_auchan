@@ -1,6 +1,4 @@
 import time
-from pprint import pprint
-
 from loguru import logger
 
 from data_extractor import DataExtractor
