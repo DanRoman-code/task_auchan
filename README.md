@@ -1,3 +1,3 @@
-Finished: Spent: 12.94406350000645
-quantity of all links : 69
-quantity of unshorten links 13
+Spent: 11.353746899985708 time
+quantity of all links: 69
+quantity of unshorten links: 26
