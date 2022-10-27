@@ -5,7 +5,7 @@ from data_extractor import DataExtractor
 from url_availability_checker import UrlAvailabilityChecker
 
 FILE_DATA_PATH = "data/messages_to_parse.dat"
-LOGER_PATH = "loger/file_{time}.log"
+LOGER_PATH = "logger/file_{time}.log"
 
 
 def timer(func):
@@ -17,17 +17,20 @@ def timer(func):
         result = func(*args, **kwargs)
 
         end = time.perf_counter()
-
-        with open("README.md", "w") as readme_f:
-            readme_f.write(f"Spent: {end - start} time\n")
-            readme_f.write(f"quantity of all links: {len(result[0])}\n")
-            readme_f.write(f"quantity of unshorten links: {len(result[1])}\n")
-
-        print(f"Finished: Spent:{end - start}")
+        execution_time = end - start
+        print(f"Finished: Execution time = {execution_time}")
+        save_readme(execution_time, len(result[0]), len(result[1]))
 
         return result
 
     return wrap_func
+
+
+def save_readme(execution_time: float, len_urls: int, len_unshorten_urls: int):
+    with open("README.md", "w") as readme_f:
+        readme_f.write(f"Spent: {execution_time} time\n")
+        readme_f.write(f"quantity of all links: {len_urls}\n")
+        readme_f.write(f"quantity of unshorten links: {len_unshorten_urls}\n")
 
 
 @timer
@@ -37,7 +40,7 @@ def main():
 
     urls = DataExtractor.get_urls_from_file(FILE_DATA_PATH)
     url_checker = UrlAvailabilityChecker(urls)
-    url_checker.main_threads()
+    url_checker.start_threads()
     all_urls = url_checker.result_status_codes
     unshorten_urls = url_checker.result_unshorten_urls
 
