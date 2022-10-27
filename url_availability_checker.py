@@ -26,19 +26,27 @@ class UrlAvailabilityChecker:
     def get_unshorten_url(self, url: str) -> Union[str, None]:
         try:
             response = requests.get(url, timeout=self.timeout)
-            if response.url != url:
-                logger.info(f"Getting an unshorten url: {response.url}")
-                return response.url
+            logger.info(f"Getting an unshorten url: {response.url}")
+            return response.url
         except requests.Timeout:
+            logger.error(f"Request failed due timeout url: {url}")
             return None
+
+    @staticmethod
+    def _replace_layer_protocol(url: str) -> str:
+        return url.replace("http://", "").replace("https://", "").replace("www.", "")
 
     def _check_website(self, url: str) -> None:
         self.result_status_codes[url] = self.get_status_code(url)
-        if self.get_unshorten_url(url):
+        unshorten_url = self.get_unshorten_url(url)
+        if unshorten_url and \
+                self._replace_layer_protocol(unshorten_url) != self._replace_layer_protocol(url):
             self.result_unshorten_urls[url] = self.get_unshorten_url(url)
 
-    def main_threads(self) -> None:
+    def start_threads(self) -> None:
+        logger.info(f"Start ThreadPoolExecutor")
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             for url in self.urls:
                 uri = requote_uri(url)
                 executor.submit(self._check_website, uri)
+        logger.info(f"End ThreadPoolExecutor")
