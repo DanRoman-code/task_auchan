@@ -18,3 +18,7 @@ class TestUrlAvailabilityChecker(TestCase):
             actual,
             "https://www.clinicaltrialsarena.com/uncategorized/overcoming-operational-barriers-to-implementing-ecoa-in-a-clinical-trial-6089276-2/"
         )
+
+    def test_replace_layer_protocol(self):
+        actual = UrlAvailabilityChecker([])._replace_layer_protocol("http://aaronshara.com/nocost/")
+        self.assertEqual(actual, "aaronshara.com/nocost/")
